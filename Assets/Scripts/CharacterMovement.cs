@@ -14,7 +14,6 @@ public class CharacterMovement : MonoBehaviour
         getInputs = FindObjectOfType<GetInputs>();
         ri = FindObjectOfType<RoadInstatiate>();
         inputVector = transform.position;
-        Debug.Log("Chara:" + transform.position);
     }
 
     void Update()

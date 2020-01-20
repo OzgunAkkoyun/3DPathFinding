@@ -9,20 +9,25 @@ public class CreateMap : MonoBehaviour
     Vector3 setPos;
     void Start()
     {
-        ri = FindObjectOfType<RoadInstatiate>();
-        Debug.Log("dağ:"+mapObjects[0].transform.position);
+        //ri = FindObjectOfType<RoadInstatiate>();
+        Debug.Log("CreateMApScript");
     }
 
-    public void MapCreate()
+    public void MapCreate(int stepSize)
     {
-        for (int i = -24; i < 20; i+=ri.squareSize)
+        ri = FindObjectOfType<RoadInstatiate>();
+        for (int i = -24; i < 20; i+= stepSize)
         {
-            for (int j = -24; j < 20; j+=ri.squareSize)
+            for (int j = -24; j < 20; j+= stepSize)
             {
-                //setPos = new Vector3(i, 0, j);
-                //if (ri.side.Find(element => element.pos==setPos) == null)
-                Instantiate(mapObjects[0], new Vector3(i, 0, j), mapObjects[0].transform.rotation);
-                //ri.side.Find(element => element.pos == setPos)
+                setPos = new Vector3(i, 0.07f, j);
+                Debug.Log(ri.side.FindIndex(element => element.pos == setPos));
+                //Debug.Log(ri.squareSize);
+                if ( ri.side.FindIndex(element => element.pos==setPos)<0 )
+                {
+                    Instantiate(mapObjects[0], new Vector3(i, 0, j), mapObjects[0].transform.rotation);
+                }
+               
             }
             
         }

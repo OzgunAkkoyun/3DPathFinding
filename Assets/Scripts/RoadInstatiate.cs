@@ -13,8 +13,10 @@ public class RoadInstatiate : MonoBehaviour
 
     private Vector3 zeroVector;
     public int squareSize;
+
     PathSideSelect pss;
     CreateMap cm;
+
     [HideInInspector]
     public string lastDirection, tempDirection, roadSpite;
 
@@ -35,7 +37,8 @@ public class RoadInstatiate : MonoBehaviour
         zeroVector = roadInstantiate.transform.position;
         RoadSpawn();
         InstantiateRoad();
-        cm.MapCreate();
+        Debug.Log("RoadInstatniate");
+        cm.MapCreate(squareSize);
     }
 
     void Update()
@@ -187,6 +190,7 @@ public class RoadInstatiate : MonoBehaviour
             tempRoad = pss.RoadSideSelect(roadSpite);
             
             GameObject node = Instantiate(tempRoad, side[i].pos, tempRoad.transform.rotation);
+            //node.transform.parent = GameObject.Find("Roads").transform;
             node.name = roadSpite;
 
             /*tempRoad = node;
