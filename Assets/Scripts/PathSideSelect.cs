@@ -6,16 +6,6 @@ public class PathSideSelect : MonoBehaviour
 {
     public GameObject[] roadSide;
     int spriteIndex;
-    void Start()
-    {
-
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-
-    }
 
     public GameObject RoadSideSelect(string direction)
     {

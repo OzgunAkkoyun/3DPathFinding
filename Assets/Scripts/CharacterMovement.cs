@@ -16,14 +16,8 @@ public class CharacterMovement : MonoBehaviour
         inputVector = transform.position;
     }
 
-    void Update()
-    {
-        
-    }
-
     IEnumerator ExecuteAnimation()
     {
-        Debug.Log(getInputs.inputs[0]);
         for (int i = 0; i < getInputs.inputs.Count; i++)
         {
             if (getInputs.inputs[i] == KeyCode.LeftArrow)

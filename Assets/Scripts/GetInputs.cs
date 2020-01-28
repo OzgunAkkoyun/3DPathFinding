@@ -7,12 +7,6 @@ public class GetInputs : MonoBehaviour
     [HideInInspector]
     public List<KeyCode> inputs = new List<KeyCode>();
 
-    void Start()
-    {
-        
-    }
-
-    // Update is called once per frame
     void Update()
     {
         if (Input.GetKeyDown(KeyCode.UpArrow))

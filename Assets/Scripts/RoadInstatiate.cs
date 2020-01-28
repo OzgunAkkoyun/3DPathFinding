@@ -35,9 +35,9 @@ public class RoadInstatiate : MonoBehaviour
         pss = FindObjectOfType<PathSideSelect>();
         cm = FindObjectOfType<CreateMap>();
         zeroVector = roadInstantiate.transform.position;
+        
         RoadSpawn();
         InstantiateRoad();
-        Debug.Log("RoadInstatniate");
         cm.MapCreate(squareSize);
     }
 
@@ -192,9 +192,6 @@ public class RoadInstatiate : MonoBehaviour
             GameObject node = Instantiate(tempRoad, side[i].pos, tempRoad.transform.rotation);
             //node.transform.parent = GameObject.Find("Roads").transform;
             node.name = roadSpite;
-
-            /*tempRoad = node;
-            tempDirection = lastDirection;*/
         }
         
     }
