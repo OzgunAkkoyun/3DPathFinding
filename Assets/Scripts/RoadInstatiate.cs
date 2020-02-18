@@ -1,28 +1,33 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using egrath.tools.algo;
+using System.Linq;
+using System;
 
 public class RoadInstatiate : MonoBehaviour
 {
     public GameObject roadInstantiate;
     public GameObject destination;
     private GameObject tempRoad;
-    public List<Transform> roads = new List<Transform>();
+    public GameObject character;
 
     public List<RoadData> side = new List<RoadData>();
+    
+    private Vector3 currentPos;
 
-    private Vector3 zeroVector;
     public int squareSize;
 
     PathSideSelect pss;
     CreateMap cm;
+    RouletteWheel rw;
 
     [HideInInspector]
-    public string lastDirection, tempDirection, roadSpite;
-
-    public bool isLeft, isRight = true;
+    public string lastDirection, roadSpite ="Up";
+    
 
     public int levelStepSize;
+    public int a = 0;
 
     public struct RoadData
     {
@@ -34,165 +39,167 @@ public class RoadInstatiate : MonoBehaviour
     {
         pss = FindObjectOfType<PathSideSelect>();
         cm = FindObjectOfType<CreateMap>();
-        zeroVector = roadInstantiate.transform.position;
+        rw = new RouletteWheel();
+        currentPos = roadInstantiate.transform.position;
+
+        var rd = new RoadData();
+        rd.pos = new Vector3(character.transform.position.x, 0.07f, character.transform.position.z+squareSize);
+        rd.lastDirection = "Up";
+        side.Add(rd);
         
-        RoadSpawn();
-        InstantiateRoad();
-        cm.MapCreate(squareSize);
+        ChosePoint();
     }
 
-    void Update()
+    private List<float> GetDistanceAvilablePoints(List<Vector3> points)
     {
-        
-    }
+        List<float> distances = new List<float>();
 
-    void RoadSpawn()
-    {
-        int i = 0;
-        do
+        for (int i = 0; i < points.Count; i++)
         {
-            var verticalOrHorizantal = Random.Range(0, 2); //0 is horizantal 1 is Vertical
+            distances.Add(Vector3.Distance(points[i], destination.transform.position));
+        }
 
-            if (i == 0)
+        return distances;
+    }
+
+    void ChosePoint()
+    {
+        List<Vector3> avilablePoints = new List<Vector3>();
+        avilablePoints = GetAvilablePoints(currentPos);
+
+        
+        List<float> dist = new List<float>();
+        List<float> tempDist = new List<float>();
+
+        dist = GetDistanceAvilablePoints(avilablePoints);
+        tempDist = dist;
+
+        for (int i = 0; i < tempDist.Count; i++)
+        {
+            tempDist[i] = 1 / tempDist[i];
+        }
+
+        tempDist.Sort();
+
+        float probility = rw.SelectFittesIndex(tempDist);
+
+        Debug.Log("probility:" +probility);
+        Debug.Log(" 1/ probility:" +1/probility);
+
+        var chosenSide = dist.FindIndex(element => element == (1/probility));
+        Debug.Log(chosenSide);
+        //var chosenSide = Random.Range(0, avilablePoints.Count);
+
+        //AddRoadToList(avilablePoints[chosenSide]);
+    }
+
+    private bool ReachedDestination(Vector3 current)
+    {
+        return current == destination.transform.position ? true : false;
+    }
+
+    private bool GridControll(Vector3 current)
+    {
+        return side.FindIndex(element => element.pos == current) < 0 ? true : false;
+    }
+
+    private List<Vector3> GetAvilablePoints(Vector3 current)
+    {
+        List<Vector3> avilablePoints = new List<Vector3>();
+        List<Vector3> allPoints = new List<Vector3>();
+
+        allPoints.Add( new Vector3(current.x - squareSize, current.y, current.z) );
+        allPoints.Add( new Vector3(current.x + squareSize, current.y, current.z) );
+        allPoints.Add( new Vector3(current.x, current.y, current.z + squareSize) );
+        allPoints.Add( new Vector3(current.x, current.y, current.z - squareSize) );
+
+        for (int i = 0; i < allPoints.Count; i++)
+        {
+            if (GridControll(allPoints[i]))
             {
-                lastDirection = "Up";
-            }
-            else
-            {
-                if (side[i-1].pos.z == destination.transform.position.z) //if y position is equal to destination, road can be created only horizantal
+                if (Mathf.Abs(destination.transform.position.x - allPoints[i].x) <= squareSize && allPoints[i].z - destination.transform.position.z <= squareSize && allPoints[i].z >= roadInstantiate.transform.position.z)
                 {
-                    verticalOrHorizantal = 0;
-                }
-
-                if (Mathf.Floor(verticalOrHorizantal) == 0)
-                {
-                    var leftOrRight = 0;
-
-                    if (side[i - 1].pos.z == destination.transform.position.z)//if y position is equal to destination, road can be created only horizantal
-                    {
-                        if (side[i - 1].pos.x - destination.transform.position.x < 0)// and the node is left or right from to destination created only left or right
-                        {
-                            leftOrRight = 1;
-                            isRight = true;
-                        }
-                        else if (side[i - 1].pos.x - destination.transform.position.x > 0)
-                        {
-                            leftOrRight = 0;
-                            isLeft = true;
-                        }
-                    }
-                    else
-                    {
-                        if (lastDirection == "Up")
-                        {
-                            leftOrRight = Random.Range(0, 2); //0 is Left 1 is Right
-                        }
-                        else if (lastDirection == "Left")
-                        {
-                            leftOrRight = 0;
-                        }
-                        else
-                        {
-                            leftOrRight = 1;
-                        }
-                    }
-
-                    if (Mathf.Floor(leftOrRight) == 0 && isLeft)
-                    {
-                        isRight = false;
-                        zeroVector.x -= squareSize;
-                        lastDirection = "Left";
-
-                    }
-                    else if (Mathf.Floor(leftOrRight) == 1 && isRight)
-                    {
-                        isLeft = false;
-                        zeroVector.x += squareSize;
-                        lastDirection = "Right";
-                    }
-
-                }
-                else
-                {
-                    isLeft = true;
-                    isRight = true;
-                    zeroVector.z += squareSize;
-                    lastDirection = "Up";
+                    avilablePoints.Add(allPoints[i]);
                 }
             }
+        }
 
-            if (destination.transform.position.x - zeroVector.x > levelStepSize)
-            {
-                zeroVector.x += squareSize;
-                isLeft = false;
-                lastDirection = "Up";
-                zeroVector.z += squareSize;
-            }
-            else if (destination.transform.position.x - zeroVector.x < -levelStepSize)
-            {
-                zeroVector.x -= squareSize;
-                isRight = false;
-                lastDirection = "Up";
-                zeroVector.z += squareSize;
-            }
+        return avilablePoints;
+        
+    }
 
-            var rd = new RoadData();
-            rd.pos = zeroVector;
-            rd.lastDirection = lastDirection;
-            side.Add(rd);
-            i++;
+    private void AddRoadToList(Vector3 nextPosition)
+    {
+        a++;
+        if (a > 50)
+        {
+            Debug.Log("A: " + a);
+            InstantiateRoad();
+            return;
+        }
 
-            if (i > 50)
-            {
-                break;
-            }
+        currentPos = nextPosition;
+        var rd = new RoadData();
+        rd.pos = nextPosition;
+        rd.lastDirection = lastDirection;
+        side.Add(rd);
 
-        } while (side[i - 1].pos.x != destination.transform.position.x || side[i - 1].pos.z != destination.transform.position.z);
+        if (ReachedDestination(nextPosition))
+        {
+            Debug.Log("Reached");
+            Debug.Log("A: " + a);
+            InstantiateRoad();
+            cm.MapCreate(squareSize);
+        }
+        else
+        {
+            ChosePoint();
+        }
     }
 
     public void InstantiateRoad()
-    {        
+    {
         for (int i = 0; i < side.Count; i++)
         {
             if (i == side.Count - 1)
             {
                 roadSpite = "UpUp";
             }
-            else if (side[i].lastDirection == "Up" && side[i+1].lastDirection == "Left")
+            else if (side[i].lastDirection == "Up" && side[i + 1].lastDirection == "Left")
             {
                 roadSpite = "UpLeft";
             }
-            else if (side[i].lastDirection == "Up" && side[i+1].lastDirection == "Right")
+            else if (side[i].lastDirection == "Up" && side[i + 1].lastDirection == "Right")
             {
                 roadSpite = "UpRight";
             }
-            else if (side[i].lastDirection == "Left" && side[i+1].lastDirection == "Left")
+            else if (side[i].lastDirection == "Left" && side[i + 1].lastDirection == "Left")
             {
                 roadSpite = "LeftLeft";
             }
-            else if (side[i].lastDirection == "Left" && side[i+1].lastDirection == "Up")
+            else if (side[i].lastDirection == "Left" && side[i + 1].lastDirection == "Up")
             {
                 roadSpite = "LeftUp";
             }
-            else if (side[i].lastDirection == "Right" && side[i+1].lastDirection == "Right")
+            else if (side[i].lastDirection == "Right" && side[i + 1].lastDirection == "Right")
             {
                 roadSpite = "RightRight";
             }
-            else if (side[i].lastDirection == "Right" && side[i+1].lastDirection == "Up")
+            else if (side[i].lastDirection == "Right" && side[i + 1].lastDirection == "Up")
             {
                 roadSpite = "RightUp";
             }
-            else if (side[i].lastDirection == "Up" && side[i+1].lastDirection == "Up")
+            else if (side[i].lastDirection == "Up" && side[i + 1].lastDirection == "Up")
             {
                 roadSpite = "UpUp";
             }
 
             tempRoad = pss.RoadSideSelect(roadSpite);
-            
+
             GameObject node = Instantiate(tempRoad, side[i].pos, tempRoad.transform.rotation);
             //node.transform.parent = GameObject.Find("Roads").transform;
             node.name = roadSpite;
         }
-        
+
     }
 }
