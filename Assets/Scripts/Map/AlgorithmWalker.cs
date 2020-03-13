@@ -11,12 +11,13 @@ public class AlgorithmWalker : MonoBehaviour
     [Space(40f)]
     public int ExpectedPathLength = 1000;
     IEnumerator Enumerator;
+    public int mapSize;
 
     public CreateLine Line;
 
     public void Awake()
     {
-        Map = new Map(10, 10);
+        Map = new Map(mapSize, mapSize);
         Pathfinder = new Pathfinder(Map);
 
         Enumerator = Pathfinder.GenerateRandomPath(ExpectedPathLength);
@@ -78,7 +79,6 @@ public class AlgorithmWalker : MonoBehaviour
 
         Gizmos.color = Color.blue;
         Gizmos.DrawSphere(Map.TargetPoint.ToVector3XZ(), 0.26f);
-
 
         Gizmos.color = Color.cyan;
         Gizmos.DrawWireCube(Map.BoundsCenterXZ, Map.BoundsSizeXZ);

@@ -693,10 +693,10 @@ PlayerSettings:
   facebookXfbml: 0
   facebookFrictionlessRequests: 1
   apiCompatibilityLevel: 6
-  cloudProjectId: 
+  cloudProjectId: efa7481e-eb16-4677-a67a-8ad853fa2545
   framebufferDepthMemorylessMode: 0
-  projectName: New Unity Project
-  organizationId: 
+  projectName: New Unity Project (2)
+  organizationId: ozgun-akkoyun
   cloudEnabled: 0
   enableNativePlatformBackendsForNewInputSystem: 0
   disableOldInputManagerSupport: 0

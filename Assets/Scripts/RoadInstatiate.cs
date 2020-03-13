@@ -68,29 +68,29 @@ public class RoadInstatiate : MonoBehaviour
         avilablePoints = GetAvilablePoints(currentPos);
 
         
-        List<float> dist = new List<float>();
-        List<float> tempDist = new List<float>();
+        //List<float> dist = new List<float>();
+        //List<float> tempDist = new List<float>();
 
-        dist = GetDistanceAvilablePoints(avilablePoints);
-        tempDist = dist;
+        //dist = GetDistanceAvilablePoints(avilablePoints);
+        //tempDist = dist;
 
-        for (int i = 0; i < tempDist.Count; i++)
-        {
-            tempDist[i] = 1 / tempDist[i];
-        }
+        //for (int i = 0; i < tempDist.Count; i++)
+        //{
+        //    tempDist[i] = 1 / tempDist[i];
+        //}
 
-        tempDist.Sort();
+        //tempDist.Sort();
 
-        float probility = rw.SelectFittesIndex(tempDist);
+        //float probility = rw.SelectFittesIndex(tempDist);
 
-        Debug.Log("probility:" +probility);
-        Debug.Log(" 1/ probility:" +1/probility);
+        //Debug.Log("probility:" +probility);
+        //Debug.Log(" 1/ probility:" +1/probility);
 
-        var chosenSide = dist.FindIndex(element => element == (1/probility));
-        Debug.Log(chosenSide);
-        //var chosenSide = Random.Range(0, avilablePoints.Count);
+        //var chosenSide = dist.FindIndex(element => element == (1/probility));
+        //Debug.Log(chosenSide);
+        var chosenSide = UnityEngine.Random.Range(0, avilablePoints.Count);
 
-        //AddRoadToList(avilablePoints[chosenSide]);
+        AddRoadToList(avilablePoints[chosenSide]);
     }
 
     private bool ReachedDestination(Vector3 current)

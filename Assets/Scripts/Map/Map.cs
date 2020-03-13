@@ -28,7 +28,7 @@ using Random = System.Random;
 // LINQ
 
 // Extension methods
-//deneme
+// deneme
 // Tools before implementation
 
 
