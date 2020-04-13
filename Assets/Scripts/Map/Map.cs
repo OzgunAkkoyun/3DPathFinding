@@ -226,6 +226,7 @@ public class Pathfinder
             if (Map.TargetPoint == location[i].Position)
             {
                 reached = true;
+                break;
             }
             else
             {

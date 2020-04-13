@@ -12,6 +12,7 @@ public class AlgorithmWalker : MonoBehaviour
     public int ExpectedPathLength = 1000;
     IEnumerator Enumerator;
     public int mapSize;
+    public GameObject floor;
 
     public CreateLine Line;
 
@@ -19,7 +20,8 @@ public class AlgorithmWalker : MonoBehaviour
     {
         Map = new Map(mapSize, mapSize);
         Pathfinder = new Pathfinder(Map);
-
+        var a = Instantiate(floor, new Vector3(Map.BoundsCenterXZ.x, -1f, Map.BoundsCenterXZ.z), Quaternion.identity);
+        a.transform.localScale = new Vector3(Map.BoundsSizeXZ.x,1,Map.BoundsSizeXZ.z); 
         Enumerator = Pathfinder.GenerateRandomPath(ExpectedPathLength);
     }
 

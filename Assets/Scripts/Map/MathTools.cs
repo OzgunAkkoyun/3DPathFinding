@@ -8,4 +8,8 @@ public static class MathTools
     {
         return new Vector3(value.x, 0f, value.y);
     }
+    public static Vector3 Vector3toXZ(this Vector3 value)
+    {
+        return new Vector3(value.x, 0f, value.z);
+    }
 }

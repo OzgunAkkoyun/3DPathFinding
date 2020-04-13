@@ -87,20 +87,49 @@ public class RoadInstatiate : MonoBehaviour
         //Debug.Log(" 1/ probility:" +1/probility);
 
         //var chosenSide = dist.FindIndex(element => element == (1/probility));
-        //Debug.Log(chosenSide);
-        var chosenSide = UnityEngine.Random.Range(0, avilablePoints.Count);
-
-        AddRoadToList(avilablePoints[chosenSide]);
+        
+        if(avilablePoints.Count == 0)
+        {
+            side.RemoveAt(side.Count - 1);
+            currentPos = side[side.Count - 1].pos;
+            ChosePoint();
+        }
+        else
+        {
+            var chosenSide = UnityEngine.Random.Range(0, avilablePoints.Count);
+            SetSide(avilablePoints[chosenSide]);
+            AddRoadToList(avilablePoints[chosenSide]);
+        }
+        
     }
 
     private bool ReachedDestination(Vector3 current)
     {
-        return current == destination.transform.position ? true : false;
+        Debug.Log(current.Vector3toXZ() + "-----" + destination.transform.position.Vector3toXZ());
+        return current.Vector3toXZ() == destination.transform.position.Vector3toXZ() ? true : false;
     }
 
     private bool GridControll(Vector3 current)
     {
         return side.FindIndex(element => element.pos == current) < 0 ? true : false;
+    }
+
+    private void SetSide(Vector3 selectedSide)
+    {
+        var lastChild = side[side.Count - 1].pos;
+       
+        if (selectedSide.x < lastChild.x)
+        {
+            lastDirection = "Left";
+        }else if(selectedSide.x > lastChild.x)
+        {
+            lastDirection = "Right";
+        }else if(selectedSide.z > lastChild.z)
+        {
+            lastDirection = "Up";
+        }
+        //Debug.Log("last dir" + lastDirection);
+        //Debug.Log("selectedSide.x:" + selectedSide + "---lastChild.x: " + lastChild);
     }
 
     private List<Vector3> GetAvilablePoints(Vector3 current)
@@ -131,7 +160,7 @@ public class RoadInstatiate : MonoBehaviour
     private void AddRoadToList(Vector3 nextPosition)
     {
         a++;
-        if (a > 50)
+        if (a > 100)
         {
             Debug.Log("A: " + a);
             InstantiateRoad();
@@ -193,7 +222,6 @@ public class RoadInstatiate : MonoBehaviour
             {
                 roadSpite = "UpUp";
             }
-
             tempRoad = pss.RoadSideSelect(roadSpite);
 
             GameObject node = Instantiate(tempRoad, side[i].pos, tempRoad.transform.rotation);
