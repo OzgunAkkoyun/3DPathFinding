@@ -6,13 +6,12 @@ public class CharacterMovement : MonoBehaviour
 {
     bool isAnimStarted = false;
     GetInputs getInputs;
-    RoadInstatiate ri;
+    
     Vector3 inputVector;
 
     void Start()
     {
         getInputs = FindObjectOfType<GetInputs>();
-        ri = FindObjectOfType<RoadInstatiate>();
         inputVector = transform.position;
     }
 
@@ -22,15 +21,15 @@ public class CharacterMovement : MonoBehaviour
         {
             if (getInputs.inputs[i] == KeyCode.LeftArrow)
             {
-                inputVector.x -= ri.squareSize;
+                inputVector.x -= 1;
             }
             else if (getInputs.inputs[i] == KeyCode.RightArrow)
             {
-                inputVector.x += ri.squareSize;
+                inputVector.x += 1;
             }
             else if (getInputs.inputs[i] == KeyCode.UpArrow)
             {
-                inputVector.z += ri.squareSize;
+                inputVector.z += 1;
             }
 
             if (isAnimStarted) yield break; // exit function
