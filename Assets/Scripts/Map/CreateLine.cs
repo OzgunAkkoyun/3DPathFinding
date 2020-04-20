@@ -17,6 +17,8 @@ public class CreateLine : MonoBehaviour
         lineRenderer.SetPositions(points);
         lineRenderer.startColor = Color.magenta;
         lineRenderer.endColor = Color.blue;
+        /*lineRenderer.startWidth = 1;
+        lineRenderer.endWidth = 1;*/
     }
 
 }

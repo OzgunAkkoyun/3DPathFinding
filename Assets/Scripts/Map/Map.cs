@@ -31,6 +31,38 @@ using Random = System.Random;
 // deneme
 // Tools before implementation
 
+// High precision time
+// ALT + SHIFT + PageDown/PageUp
+// Method 'ref' parameters
+
+// TODO:
+// Stats
+// Istedigimiz uzunlukta yol olusturabilmesi
+// Alternatif yollar sunabilmesi
+// Histogram
+
+public class Timer
+{
+    private float StartTime;
+    public float Duration;
+
+    public Timer()
+    {
+        StartTime = Time.realtimeSinceStartup;
+    }
+
+    public void Finish(bool log)
+    {
+        var endTime = Time.realtimeSinceStartup;
+        Duration = endTime - StartTime;
+
+        if (log)
+        {
+            Debug.Log($"Calculations took {TimeSpan.FromSeconds(Duration).ToString("g")}");
+        }
+    }
+}
+
 
 [Serializable]
 public struct Cell : IEquatable<Cell>
@@ -90,7 +122,7 @@ public class Map
     public Vector3 BoundsCenterXZ => (BoundsMin + BoundsMax).ToVector3XZ() / 2;
     public Vector3 BoundsSizeXZ => (BoundsMax - BoundsMin).ToVector3XZ();
 
-    public Vector2Int StartingPoint;
+    public Vector2Int StartingPoint = new Vector2Int(1, 1);
     public Vector2Int TargetPoint = new Vector2Int(3, 3);
 
     public Map(int sizeX, int sizeY)
@@ -109,19 +141,29 @@ public class Pathfinder
     public Map Map;
     [Space(15f)]
     public List<Cell> Path = new List<Cell>();
-    [Space(15f)]
-    public List<Cell> UnavaliableCells = new List<Cell>();
+    public int PathLength => Path.Count;
+    //[Space(15f)]
+    //public List<Cell> UnavaliableCells = new List<Cell>();
 
-    [Space(15f)]
-    public List<Cell> Neighbours;
+    public int TotalStepBacks = 0;
+    public int TotalSteps = 0;
 
     public Pathfinder(Map map)
     {
         Map = map;
     }
 
+    public void Reset()
+    {
+        Path.Clear();
+        TotalSteps = 0;
+        TotalStepBacks = 0;
+    }
+
     public IEnumerator GenerateRandomPath(int expectedPathLength)
     {
+        var timer = new Timer();
+
         // TODO: Check for expectedPathLength
         Path.Add(new Cell(Map.StartingPoint));
         var currentPathIndex = 0;
@@ -129,35 +171,57 @@ public class Pathfinder
         while (currentPathIndex < expectedPathLength)
         {
             var currentCell = Path[currentPathIndex];
-            Neighbours = GetAvailableNeighbours(currentCell);
+            var neighbours = GetAvailableNeighbours(currentCell);
             yield return null;
 
-            if (IsTargetReached(Neighbours))
+            if (IsTargetReached(neighbours))
             {
                 Path.Add(new Cell(Map.TargetPoint));
+                timer.Finish(EnableLogging);
+                //Debug.Log($"Step backs: " + StepBackCount);
+                //Debug.Log($"Steps: " + TotalSteps);
+                //Debug.Log($"Step back ratio: " + ((float)StepBackCount / TotalSteps).ToString("P2"));
                 yield break;
             }
 
-            if (SelectNextCell(Neighbours, out Cell selectedNeighbour))
+            if (SelectNextCell(neighbours, out Cell selectedNeighbour))
             {
+                TotalSteps++;
+                //Debug.Log("Current TotalSteps: " + TotalSteps);
                 Path.Add(selectedNeighbour);
                 currentPathIndex++;
+                //CheckRoadLenght(currentCell);
             }
             else
             {
-                UnavaliableCells.Add(currentCell);
-                Path.RemoveAt(currentPathIndex);
-                currentPathIndex--;
-                Path[currentPathIndex].UnavaliableNeighbours.Add(currentCell.Position);
-               
-                // TODO: Gecmise git
+                TotalStepBacks++;
+                //Debug.Log("------------------------- Current TotalStepBacks: " + TotalStepBacks);
+                OneStepBackinList(currentCell, ref currentPathIndex);
             }
             
         }
 
+        timer.Finish(EnableLogging);
+
         //Path.Clear();
-        yield break;
     }
+
+    //Go one step back in the Path list
+    private void OneStepBackinList(Cell currentCell, ref int currentPathIndex)
+    {
+        //UnavaliableCells.Add(currentCell);
+        Path.RemoveAt(currentPathIndex);
+        currentPathIndex--;
+        Path[currentPathIndex].UnavaliableNeighbours.Add(currentCell.Position);
+    }
+
+    //private void CheckRoadLength(Cell currentCell, int expectedPathLength)
+    //{
+    //    if (Path.Count > expectedPathLength)
+    //    {
+    //        OneStepBackinList(currentCell);
+    //    }
+    //}
 
     private List<Cell> GetAvailableNeighbours(Cell cell)
     {
@@ -169,7 +233,7 @@ public class Pathfinder
 
             if (IsCellOnPath(neighbour))
             {
-                Debug.Log("Cell On Path");
+                //Log("Cell On Path");
             }
             else
             {
@@ -177,7 +241,7 @@ public class Pathfinder
                 {
                     if (CellUnavaliableNeighboursGet(neighbour,cell))
                     {
-                        Debug.Log("Cell UnavaliableNeighbours");
+                        //Log("Cell UnavaliableNeighbours");
                     }
                     else
                     {
@@ -186,7 +250,7 @@ public class Pathfinder
                 }
                 else
                 {
-                    Debug.Log("Cell Not in bounds");
+                    //Log("Cell Not in bounds");
                 }
                 
             }
@@ -234,6 +298,20 @@ public class Pathfinder
             }
         }
         return reached;
+    }
+
+    #endregion
+
+    #region Logging
+
+    public bool EnableLogging = true;
+
+    private void Log(string message)
+    {
+        if (EnableLogging)
+        {
+            Debug.Log(message);
+        }
     }
 
     #endregion
