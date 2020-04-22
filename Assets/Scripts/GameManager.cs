@@ -5,10 +5,14 @@ using UnityEngine;
 public class GameManager : MonoBehaviour
 {
     CharacterMovement character;
+    private UIHandler uh;
+    public bool is3DStarted = false;
 
     void Start()
     {
         character = FindObjectOfType<CharacterMovement>();
+        uh = FindObjectOfType<UIHandler>();
+
     }
 
     // Update is called once per frame
@@ -16,7 +20,9 @@ public class GameManager : MonoBehaviour
     {
         if (Input.GetKeyDown(KeyCode.T))
         {
-            character.StartCoroutine( "ExecuteAnimation" );
+            is3DStarted = true;
+            uh.StartCoroutine("MiniMapSetStartPosition");
+            character.StartCoroutine("ExecuteAnimation");
         }
     }
 }

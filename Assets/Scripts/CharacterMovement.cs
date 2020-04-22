@@ -1,11 +1,13 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class CharacterMovement : MonoBehaviour
 {
     bool isAnimStarted = false;
     GetInputs getInputs;
+    private Map map = new Map(1,1);
     
     Vector3 inputVector;
 
@@ -31,6 +33,15 @@ public class CharacterMovement : MonoBehaviour
             {
                 inputVector.z += 1;
             }
+            else if (getInputs.inputs[i] == KeyCode.DownArrow)
+            {
+                inputVector.z -= 1;
+            }
+
+            //Code Inputs coloring
+            getInputs.codeInputsObjects[i].GetComponent<Image>().color =new Color(163/255,255/255,131/255);
+            if(i!=0)
+                getInputs.codeInputsObjects[i-1].GetComponent<Image>().color = Color.white;
 
             if (isAnimStarted) yield break; // exit function
             isAnimStarted = true;
@@ -51,6 +62,11 @@ public class CharacterMovement : MonoBehaviour
             }
             transform.position = inputVector;
             isAnimStarted = false;
+
+            if (map.TargetPoint == new Vector2Int((int)transform.position.x, (int)transform.position.z))
+            {
+                //Debug.Log("Character reached to target");
+            }
         }
     }
 }

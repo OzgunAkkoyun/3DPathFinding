@@ -5,8 +5,10 @@ using UnityEngine.EventSystems;
 
 public class UIHandler : MonoBehaviour
 {
+    private GameManager gm;
     public GameObject minimap;
     private bool mapZoomed = false;
+    private float mapSizeMultiplier = 0.15f;
 
     public GameObject codePanel;
     private bool codePanelOpened = false;
@@ -15,11 +17,34 @@ public class UIHandler : MonoBehaviour
     private void Awake()
     {
         codePaneleWidth = Mathf.Abs(codePanel.transform.position.x);
+        gm = FindObjectOfType<GameManager>();
     }
 
     public void MiniMapZoom()
     {
-        StartCoroutine(MiniMapSizeChange());
+        if(gm.is3DStarted)
+            StartCoroutine(MiniMapSizeChange());
+    }
+
+    public IEnumerator MiniMapSetStartPosition()
+    {
+        minimap.GetComponent<RectTransform>().SetAnchor(AnchorPresets.TopRight);
+        minimap.GetComponent<RectTransform>().SetPivot(PivotPresets.TopRight);
+        minimap.GetComponent<RectTransform>().sizeDelta = new Vector2(Screen.width, Screen.height);
+        
+        float t = 0;
+        while (true)
+        {
+            t+=Time.deltaTime/10;
+            Debug.Log(minimap.GetComponent<RectTransform>().sizeDelta.x);
+            minimap.GetComponent<RectTransform>().sizeDelta =
+                Vector2.Lerp(minimap.GetComponent<RectTransform>().sizeDelta, new Vector2(300, 300), t);
+            minimap.transform.GetChild(0).localScale = Vector2.Lerp(minimap.transform.GetChild(0).localScale, new Vector3(1, 1, 1), t*2); 
+            if (Mathf.Round(minimap.GetComponent<RectTransform>().sizeDelta.x) == 300)
+                yield break;
+            yield return new WaitForSeconds(0f);
+        }
+        
     }
 
     public IEnumerator MiniMapSizeChange()
@@ -29,12 +54,12 @@ public class UIHandler : MonoBehaviour
         {
             if (!mapZoomed)
             {
-                minimap.transform.localScale = minimap.transform.localScale + new Vector3(0.1f, 0.1f, 0.1f);
+                minimap.transform.localScale = minimap.transform.localScale + new Vector3(mapSizeMultiplier, mapSizeMultiplier, mapSizeMultiplier);
                 yield return new WaitForSeconds(0f);
             }
             else
             {
-                minimap.transform.localScale = minimap.transform.localScale - new Vector3(0.1f, 0.1f, 0.1f);
+                minimap.transform.localScale = minimap.transform.localScale - new Vector3(mapSizeMultiplier, mapSizeMultiplier, mapSizeMultiplier);
                 yield return new WaitForSeconds(0f);
             }
         }

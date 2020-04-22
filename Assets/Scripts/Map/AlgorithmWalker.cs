@@ -18,9 +18,12 @@ public class AlgorithmWalker : MonoBehaviour
     public int mapSize;
     public GameObject road;
     public GameObject grass;
+    public GameObject target;
     public GameObject[] trees;
 
     public CreateLine Line;
+
+    private int howManyTries=0;
 
     public void Awake()
     {
@@ -28,8 +31,35 @@ public class AlgorithmWalker : MonoBehaviour
         Pathfinder = new Pathfinder(Map);
          
         StartToGeneratePath();
+
+        GenaretePathInStart();
     }
 
+    private void GenaretePathInStart()
+    {
+        Pathfinder.EnableLogging = false;
+        StartToGeneratePath();
+        howManyTries++;
+        for (int i = 0; i < ExpectedPathLength; i++)
+        {
+            var shouldContinue = Enumerator.MoveNext();
+            
+            if (!shouldContinue)
+            {
+                if (Pathfinder.Path.Count <= 10)
+                {
+                    Debug.Log("Finished. Length: " + Pathfinder.PathLength);
+                    Debug.Log("Finished. Trys: " + howManyTries);
+                    GenerateMap();
+                    break;
+                }
+                else
+                {
+                    GenaretePathInStart();
+                }
+            }
+        }
+    }
     private void StartToGeneratePath()
     {
         Pathfinder.Reset();
@@ -108,7 +138,6 @@ public class AlgorithmWalker : MonoBehaviour
             }
         }
 
-        
         Debug.LogWarning("Failed.");
     }
 
@@ -126,7 +155,10 @@ public class AlgorithmWalker : MonoBehaviour
                 }
                 else
                 {
-                    Instantiate(road, new Vector3(i , 0, j ), Quaternion.identity);
+                    if(Map.TargetPoint != new Vector2Int(i,j))
+                        Instantiate(road, new Vector3(i , 0, j ), Quaternion.identity);
+                    else
+                        Instantiate(target, new Vector3(i, 0, j), Quaternion.identity);
                 }
             }
         }
