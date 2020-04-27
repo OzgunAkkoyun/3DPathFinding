@@ -8,6 +8,7 @@ public class CharacterMovement : MonoBehaviour
     bool isAnimStarted = false;
     GetInputs getInputs;
     private Map map = new Map(1,1);
+    public ParticleSystem winEffect;
     
     Vector3 inputVector;
 
@@ -66,6 +67,7 @@ public class CharacterMovement : MonoBehaviour
             if (map.TargetPoint == new Vector2Int((int)transform.position.x, (int)transform.position.z))
             {
                 //Debug.Log("Character reached to target");
+                winEffect.Play();
             }
         }
     }

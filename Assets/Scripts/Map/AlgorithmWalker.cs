@@ -29,7 +29,7 @@ public class AlgorithmWalker : MonoBehaviour
     {
         Map = new Map(mapSize, mapSize);
         Pathfinder = new Pathfinder(Map);
-         
+
         StartToGeneratePath();
 
         GenaretePathInStart();
@@ -191,7 +191,7 @@ public class AlgorithmWalker : MonoBehaviour
         var totalStepBacks = 0;
         var totalSuccessfulRuns = 0;
         var stepsToFinish = "";
-
+        var timer = new Timer();
         for (int iRepeat = 0; iRepeat < repeatCount; iRepeat++)
         {
             StartToGeneratePath();
@@ -211,7 +211,7 @@ public class AlgorithmWalker : MonoBehaviour
                 }
             }
         }
-
+        timer.Finish(true);
         Debug.Log($"Total successful runs: " + totalSuccessfulRuns);
         Debug.Log($"Average step backs: " + ((float)totalStepBacks / totalSuccessfulRuns));
         Debug.Log($"Average steps: " + ((float)totalSteps / totalSuccessfulRuns));

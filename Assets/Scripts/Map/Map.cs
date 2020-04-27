@@ -203,7 +203,6 @@ public class Pathfinder
 
         timer.Finish(EnableLogging);
 
-        //Path.Clear();
     }
 
     //Go one step back in the Path list
